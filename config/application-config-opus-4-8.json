@@ -1,0 +1,24 @@
+{
+	"name": "rust-tritone-amd-kernel-rl",
+	"log_level": "debug",
+	"gpu_server_url": "http://192.168.1.221:3202",
+  "llm_server_url": "http://192.168.1.178:3200",
+  "workflow_batch": [
+    "triton-kernels/vector_add.py"
+  ],
+  "working_dir": "/home/lzuccarelli/Projects/rust-triton-amd-kernel-rl",
+  "cutedsl_env_path": "/home/lzuccarelli/Projects/cutlass/target_cute_env",
+  "llm_agent": "Api",
+  "llm_model": "opus-4-8",
+  "controller_mode": "Baseline",
+  "openapi_url": "https://api.enmaas.devshift.net/messages",
+  "max_rollout": 10,
+  "rollout_start": 0,
+  "flow_control": 127,
+  "gpu_arch": 86,
+  "create_stats": true,
+  "use_error_vec": true,
+  "acceptance_threshold": 0.94,
+  "degradation_threshold": -15.0,
+  "exclude_trajectories": []
+}

@@ -1,0 +1,1004 @@
+{
+  "known_states": {
+    "memory_bandwidth_limited": {
+      "state_name": "memory_bandwidth_limited",
+      "primary_bottleneck": "memory_bound",
+      "secondary_characteristics": [
+        "High HBM throughput utilization",
+        "Bandwidth saturation",
+        "Potential uncoalesced / strided global access",
+        "Poor L2 reuse"
+      ],
+      "performance_signature": "HBM bandwidth is the primary limiting factor with potential for access-pattern and block-shape optimization",
+      "context_description": "Workload is limited by device memory bandwidth, showing signs of inefficient access patterns or cache behavior on CDNA/RDNA",
+      "relative_patterns": {
+        "memory_pressure": "high",
+        "compute_utilization": "underutilized",
+        "access_patterns": "potentially_uncoalesced",
+        "cache_behavior": "suboptimal"
+      }
+    },
+    "compute_throughput_limited": {
+      "state_name": "compute_throughput_limited",
+      "primary_bottleneck": "compute_bound",
+      "secondary_characteristics": [
+        "High VALU / Matrix-core (MFMA) utilization",
+        "Instruction throughput bottleneck",
+        "Opportunity for matrix cores and packed math",
+        "High arithmetic intensity"
+      ],
+      "performance_signature": "Compute units are saturated, indicating opportunity for matrix-core, packed-math, or algorithmic optimization",
+      "context_description": "Workload is compute-intensive with potential for AMD Matrix Core (MFMA) utilization or algorithmic improvements",
+      "relative_patterns": {
+        "compute_pressure": "high",
+        "memory_utilization": "adequate",
+        "instruction_mix": "potentially_suboptimal",
+        "parallelism": "high"
+      }
+    },
+    "latency_occupancy_limited": {
+      "state_name": "latency_occupancy_limited",
+      "primary_bottleneck": "latency_bound",
+      "secondary_characteristics": [
+        "Low occupancy (few waves per SIMD / CU)",
+        "Insufficient parallelism",
+        "VGPR / LDS resource underutilization or over-allocation",
+        "Insufficient software pipelining (num_stages)"
+      ],
+      "performance_signature": "Neither memory nor compute are saturated, indicating latency-hiding or occupancy issues (waves per EU)",
+      "context_description": "Workload has insufficient parallelism or resource conflicts limiting occupancy and latency hiding",
+      "relative_patterns": {
+        "occupancy": "low",
+        "parallelism": "insufficient",
+        "resource_conflicts": "present",
+        "latency_hiding": "poor"
+      }
+    }
+  },
+  "optimization_strategies": {
+    "high_level_inefficiency": {
+      "optimizations": [
+        {
+          "technique": "algorithmic_changes",
+          "predicted_improvement": null,
+          "description": "Replace the current algorithm with a more efficient approach",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "recompute_vs_reuse",
+          "predicted_improvement": null,
+          "description": "Trade redundant compute for memory traffic (or vice versa) to match the dominant bottleneck",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "data_structure_optimizations",
+          "predicted_improvement": null,
+          "description": "Change underlying data structures/representations",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Instructions unnecessary for computing the kernel",
+      "secondary_characteristics": "Excessive or redundant compute operations, memory accesses. Poor scaling, inefficient program logic. Can have misleadingly high utilization."
+    },
+    "memory_bandwidth_saturated": {
+      "optimizations": [
+        {
+          "technique": "vectorized_memory_access",
+          "predicted_improvement": null,
+          "description": "Load/store contiguous blocks; give the compiler tl.max_contiguous / tl.multiple_of hints so it emits wide (dwordx4) global transactions",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "memory_coalescing_optimization",
+          "predicted_improvement": null,
+          "description": "Make the fastest-varying program/lane index walk the stride-1 (last) tensor dimension so a wavefront reads a contiguous span",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "block_tiling",
+          "predicted_improvement": null,
+          "description": "Tune BLOCK_M/BLOCK_N/BLOCK_K so reused operands stay on-chip (registers/LDS) across the K loop",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "data_layout_transformation",
+          "predicted_improvement": null,
+          "description": "Convert AoS to SoA layouts so block loads are contiguous",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "mixed_precision",
+          "predicted_improvement": null,
+          "description": "Use bf16/fp16 (or fp8 e4m3/e5m2 on CDNA3) to halve bandwidth; accumulate in fp32",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Global (HBM) memory bandwidth saturation",
+      "secondary_characteristics": "Memory throughput >80%, Bandwidth utilization high, Coalescing efficiency varies"
+    },
+    "memory_latency_bound": {
+      "optimizations": [
+        {
+          "technique": "software_pipelining",
+          "predicted_improvement": null,
+          "description": "Increase num_stages so Triton prefetches the next K-tile into LDS/registers while computing the current one",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "lds_blocking",
+          "predicted_improvement": null,
+          "description": "Stage reused tiles in LDS (shared memory) to cut repeated HBM round-trips",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "register_blocking",
+          "predicted_improvement": null,
+          "description": "Keep accumulators and frequently reused operands in registers across the inner loop",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "l2_cache_locality",
+          "predicted_improvement": null,
+          "description": "Reorder program ids (GROUP_SIZE_M super-grouping) so concurrently-scheduled workgroups reuse the same rows/cols out of L2",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Memory access latency and cache misses",
+      "secondary_characteristics": "Memory throughput 40-70%, High cache miss rate, Random access patterns"
+    },
+    "lds_bank_conflicts": {
+      "optimizations": [
+        {
+          "technique": "bank_conflict_padding",
+          "predicted_improvement": null,
+          "description": "Pad the fast dimension of LDS tiles so consecutive rows land in different banks (LDS has 32 banks)",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "access_pattern_swizzling",
+          "predicted_improvement": null,
+          "description": "Tune kpack / matrix_instr_nonkdim so the MFMA operand layout avoids LDS bank conflicts",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "memory_layout_permutation",
+          "predicted_improvement": null,
+          "description": "Reorder/transpose the staged tile to avoid conflicting LDS access strides",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "LDS (shared memory) bank conflicts causing serialization",
+      "secondary_characteristics": "LDS bank conflicts detected, Irregular access patterns into shared memory"
+    },
+    "cache_inefficient": {
+      "optimizations": [
+        {
+          "technique": "cache_blocking",
+          "predicted_improvement": null,
+          "description": "Size tiles so the working set fits L1 (vector cache) / L2",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "temporal_locality_optimization",
+          "predicted_improvement": null,
+          "description": "Reorder computation so reused data is touched close together in time",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "workgroup_swizzling",
+          "predicted_improvement": null,
+          "description": "Group program ids (GROUP_SIZE_M) to improve L2 hit rate across co-resident workgroups",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "cache_modifier_hints",
+          "predicted_improvement": null,
+          "description": "Use tl.load cache_modifier (e.g. '.cg' / '.ca') to steer read-only / streaming data through the right cache level",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Cache misses and inefficient cache utilization",
+      "secondary_characteristics": "Low L1/L2 cache hit rates, Spatial locality issues, Poor temporal reuse"
+    },
+    "compute_throughput_saturated": {
+      "optimizations": [
+        {
+          "technique": "matrix_core_utilization",
+          "predicted_improvement": null,
+          "description": "Express matmuls with tl.dot so they lower to AMD Matrix Core (MFMA) instructions; tune matrix_instr_nonkdim",
+          "category": "compute",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "instruction_level_parallelism",
+          "predicted_improvement": null,
+          "description": "Raise num_stages / unroll so independent MFMA and VALU ops overlap and hide issue latency",
+          "category": "compute",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "packed_math",
+          "predicted_improvement": null,
+          "description": "Use packed fp16/bf16 datatypes so the VALU issues two FLOPs per lane per cycle (v_pk_* ops)",
+          "category": "compute",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "fast_math_optimization",
+          "predicted_improvement": null,
+          "description": "Use lower-precision/approximate intrinsics where accuracy allows (e.g. fp8 inputs to tl.dot on CDNA3)",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "vectorized_operations",
+          "predicted_improvement": null,
+          "description": "Operate on whole Triton blocks/vectors rather than scalar element loops",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Instruction throughput and arithmetic unit saturation (VALU / Matrix cores)",
+      "secondary_characteristics": "Compute throughput >80%, All execution units busy, High arithmetic intensity"
+    },
+    "instruction_mix_suboptimal": {
+      "optimizations": [
+        {
+          "technique": "instruction_scheduling_optimization",
+          "predicted_improvement": null,
+          "description": "Tune num_stages / num_warps so the scheduler keeps MFMA, VALU and memory pipes busy",
+          "category": "compute",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "functional_unit_balancing",
+          "predicted_improvement": null,
+          "description": "Rebalance work across Matrix cores and VALU so neither sits idle",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "kernel_fusion",
+          "predicted_improvement": null,
+          "description": "Fuse neighbouring elementwise/reduction kernels to balance the instruction mix and cut launches",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "mathematical_transformation",
+          "predicted_improvement": null,
+          "description": "Reassociate / refactor operators to solve the problem with cheaper instructions",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Poor instruction scheduling and functional unit utilization",
+      "secondary_characteristics": "Unbalanced use of functional units, Some units idle while others saturated"
+    },
+    "wavefront_divergence_high": {
+      "optimizations": [
+        {
+          "technique": "predicated_execution",
+          "predicted_improvement": null,
+          "description": "Replace data-dependent branches with tl.where / masked ops so all 64 lanes stay active",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "branch_reduction_techniques",
+          "predicted_improvement": null,
+          "description": "Use arithmetic / lookup instead of control flow in the inner loop",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "work_distribution_optimization",
+          "predicted_improvement": null,
+          "description": "Sort/bucket inputs so a wavefront (64 lanes) processes similar work and diverges less",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "stream_compaction",
+          "predicted_improvement": null,
+          "description": "Filter/compact active elements so lanes are not wasted on masked-off work",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "SIMT/SIMD efficiency loss due to divergent execution paths across a 64-lane wavefront",
+      "secondary_characteristics": "High wavefront divergence, Branching in inner loops, Irregular control flow"
+    },
+    "low_occupancy_vgpr_pressure": {
+      "optimizations": [
+        {
+          "technique": "vgpr_pressure_reduction",
+          "predicted_improvement": null,
+          "description": "Shrink live ranges / reuse variables so the kernel fits more waves per SIMD",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "block_shape_reduction",
+          "predicted_improvement": null,
+          "description": "Reduce BLOCK_M/BLOCK_N or num_stages to lower VGPR usage and raise occupancy",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "spill_elimination",
+          "predicted_improvement": null,
+          "description": "Restructure to avoid scratch (VGPR spill to global) — check for scratch_store in ISA",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "waves_per_eu_tuning",
+          "predicted_improvement": null,
+          "description": "Set the waves_per_eu launch hint to steer the register allocator toward higher occupancy",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "VGPR pressure limiting the number of active waves per SIMD",
+      "secondary_characteristics": "Low occupancy due to high VGPR usage, Register spills to scratch detected"
+    },
+    "low_occupancy_lds": {
+      "optimizations": [
+        {
+          "technique": "lds_footprint_reduction",
+          "predicted_improvement": null,
+          "description": "Reduce per-workgroup LDS so more workgroups are resident per CU (LDS is ~64 KB/CU)",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "lds_buffer_reuse",
+          "predicted_improvement": null,
+          "description": "Reuse one LDS buffer across phases instead of allocating several",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "block_size_adaptation",
+          "predicted_improvement": null,
+          "description": "Adjust BLOCK_K / tile shapes to trade LDS footprint for occupancy",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "LDS usage limiting the number of resident workgroups per CU",
+      "secondary_characteristics": "Low occupancy due to LDS limits, High shared-memory usage per workgroup"
+    },
+    "insufficient_parallelism": {
+      "optimizations": [
+        {
+          "technique": "work_per_program_increase",
+          "predicted_improvement": null,
+          "description": "Assign more output elements per program instance (larger BLOCK) to amortize overhead",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "program_coarsening",
+          "predicted_improvement": null,
+          "description": "Process multiple tiles per program to improve reuse and reduce launch count",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "persistent_kernel_pattern",
+          "predicted_improvement": null,
+          "description": "Launch one program per CU that loops over a tile queue (persistent / stream-K style)",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "grid_size_optimization",
+          "predicted_improvement": null,
+          "description": "Ensure the launch grid has enough programs to fill all CUs and hide latency",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "split_k",
+          "predicted_improvement": null,
+          "description": "Split the reduction (K) dimension across programs and atomically/stage-reduce to expose more parallelism on skinny problems",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Not enough parallel work to fill the CUs and hide latency",
+      "secondary_characteristics": "Low wave occupancy, Small problem sizes, Insufficient work per CU"
+    },
+    "hybrid_bound": {
+      "optimizations": [
+        {
+          "technique": "memory_compute_overlap",
+          "predicted_improvement": null,
+          "description": "Pipeline global loads with compute via num_stages so memory and MFMA/VALU overlap",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "adaptive_block_sizing",
+          "predicted_improvement": null,
+          "description": "Autotune BLOCK_M/N/K, num_warps, num_stages to balance memory and compute pressure",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "fused_operations",
+          "predicted_improvement": null,
+          "description": "Fuse memory-bound epilogue (bias/activation) into the compute kernel to cut intermediate traffic",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "packed_math",
+          "predicted_improvement": null,
+          "description": "Use packed fp16/bf16 to improve both effective bandwidth and compute throughput",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Balanced memory-compute limitations (hybrid)",
+      "secondary_characteristics": "Memory throughput 40-70% and compute throughput 40-70%, neither dominates. Latency hiding is moderate and improvement is possible from both sides."
+    },
+    "memory_compute_balanced": {
+      "optimizations": [
+        {
+          "technique": "memory_compute_overlap",
+          "predicted_improvement": null,
+          "description": "Pipeline loads and compute (num_stages) so neither pipe stalls",
+          "category": "latency",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "adaptive_tiling",
+          "predicted_improvement": null,
+          "description": "Autotune tile shapes for the balance point between reuse and occupancy",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "fused_operations",
+          "predicted_improvement": null,
+          "description": "Combine memory-bound and compute-bound stages into one kernel",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "algorithmic_rebalancing",
+          "predicted_improvement": null,
+          "description": "Choose an algorithm whose arithmetic intensity matches the hardware balance point",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Balanced memory and compute load with room for optimization in both",
+      "secondary_characteristics": "Memory throughput 40-60%, Compute throughput 40-60%, Both contribute to bottleneck"
+    },
+    "latency_memory_bound": {
+      "optimizations": [
+        {
+          "technique": "occupancy_memory_codesign",
+          "predicted_improvement": null,
+          "description": "Jointly tune occupancy (waves_per_eu, block shape) and the memory access pattern",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "hierarchical_tiling",
+          "predicted_improvement": null,
+          "description": "Multi-level tiling (workgroup -> wave -> register) for both occupancy and locality",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "resource_balanced_design",
+          "predicted_improvement": null,
+          "description": "Balance VGPR / LDS / num_stages so no single resource caps occupancy",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "workload_restructuring",
+          "predicted_improvement": null,
+          "description": "Fundamental algorithm changes to relieve both occupancy and memory limits",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Both occupancy and memory access patterns need optimization",
+      "secondary_characteristics": "Low occupancy combined with memory issues, Multiple bottlenecks present"
+    },
+    "launch_overhead_dominant": {
+      "optimizations": [
+        {
+          "technique": "kernel_fusion",
+          "predicted_improvement": null,
+          "description": "Combine multiple small kernels into one to amortize launch cost",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "hip_graphs",
+          "predicted_improvement": null,
+          "description": "Capture a repeated sequence of launches into a HIP graph to cut per-launch overhead",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "persistent_kernels",
+          "predicted_improvement": null,
+          "description": "Long-running programs with internal work queues instead of many short launches",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "asynchronous_execution",
+          "predicted_improvement": null,
+          "description": "Overlap launches and copies across HIP streams",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Kernel launch latency and host-side dispatch overhead",
+      "secondary_characteristics": "Small kernels with high launch overhead, Frequent host-device synchronization"
+    },
+    "transfer_bandwidth_limited": {
+      "optimizations": [
+        {
+          "technique": "transfer_optimization",
+          "predicted_improvement": null,
+          "description": "Use pinned host memory and async hipMemcpyAsync transfers",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "data_compression",
+          "predicted_improvement": null,
+          "description": "Compress / downcast data before host-device transfer",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "zero_copy_memory",
+          "predicted_improvement": null,
+          "description": "Map host memory for direct GPU access when transfer dominates",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "managed_memory_hints",
+          "predicted_improvement": null,
+          "description": "Use HMM/managed memory with prefetch hints (XNACK) to place pages near the consumer",
+          "category": "memory",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        },
+        {
+          "technique": "pipeline_parallelism",
+          "predicted_improvement": null,
+          "description": "Overlap transfers with computation across streams",
+          "category": "general",
+          "actual_improvement": null,
+          "confidence_score": 0.5,
+          "last_updated": null,
+          "usage_count": 0,
+          "predicted_speedup": 1.0,
+          "actual_speedup": null,
+          "initial_elapsed_cycles": null
+        }
+      ],
+      "primary_bottleneck": "Host-device transfer bandwidth and latency",
+      "secondary_characteristics": "High PCIe/Infinity-Fabric transfer overhead, Large data movement, Host-device bottleneck"
+    }
+  },
+  "composite_optimizations": {},
+  "discovered_states": {
+  }
+}

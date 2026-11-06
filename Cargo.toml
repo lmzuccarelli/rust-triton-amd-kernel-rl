@@ -1,0 +1,44 @@
+[package]
+name = "rust-triton-amd-kernel-rl"
+version = "0.6.1"
+edition = "2024"
+authors = ["Luigi Mario Zuccarelli<>luigizuccarelli@gmail.com"]
+
+[lib]
+name = "kernel_optimizer"
+path = "src/lib.rs"
+
+[[bin]]
+name = "kernel-prompt-generator"
+path = "src/bin/generate_prompts.rs"
+
+[[bin]]
+name = "kernel-optimizer-triton-service"
+path = "src/bin/server.rs"
+
+[dependencies]
+serde_derive = "1.0.219"
+clap = { version = "4.5.41", features = ["derive"] }
+custom-logger = { git = "https://github.com/lmzuccarelli/rust-custom-logger", branch = "main", version = "0.2.0" }
+serde = "1.0.225"
+serde_json = "1.0.145"
+http = "1.1.0"
+http-body-util = "0.1.2"
+tokio = { version = "1.40.0", features = ["full"] }
+async-trait = "0.1.89"
+hyper = "1.9.0"
+orx-parallel = "2"
+hyper-util = { version = "0.1.20" ,  default-features = false, features = ["client-legacy","tokio", "server-auto" ] }
+mimalloc = { version = "*", features = ["v3"] }
+regex = "1.12.3"
+short-id = "0.5.0"
+futures = "0.3.32"
+walkdir = "2.5.0"
+rand = "0.10.1"
+reqwest = { version= "0.13.4" }
+
+[profile.release]
+strip = true # Strip symbols from the binary
+opt-level = "s" # Optimize for size
+lto = true # Enable link-time optimization
+codegen-units = 1 # Mazimize size reduction optimization

@@ -1,0 +1,26 @@
+{
+	"name": "rust-cutedsl-kernel-rl",
+	"log_level": "debug",
+	"gpu_server_url": "http://192.168.1.221:3202",
+  "llm_server_url": "http://192.168.1.178:3200",
+  "workflow_batch": [
+    "kernel-cutedsl/kernels/square_gemm.py"
+  ],
+  "working_dir": "/home/lzuccarelli/Projects/rust-cutedsl-kernel-rl",
+  "cutedsl_env_path": "/home/lzuccarelli/Projects/cutlass/target_cute_env",
+  "llm_agent": "Claude",
+  "llm_model": "rits/zai-org/glm-5-3",
+  "response_type": "Enmaas",
+  "controller_mode": "Baseline",
+  "openapi_url": "https://api.enmaas.devshift.net/v1/messages",
+  "token_file": "/home/luzuccar/.enmaas/token",
+  "max_rollout": 10,
+  "rollout_start": 0,
+  "flow_control": 127,
+  "gpu_arch": 86,
+  "create_stats": true,
+  "use_error_vec": true,
+  "acceptance_threshold": 0.94,
+  "degradation_threshold": -15.0,
+  "exclude_trajectories": []
+}

@@ -1,0 +1,26 @@
+{
+	"name": "rust-triton-amd-kernel-rl",
+	"log_level": "debug",
+	"gpu_server_url": "http://192.168.1.6:3202",
+  "llm_server_url": "http://192.168.1.6:3200",
+  "workflow_batch": [
+    "triton-kernels/vector_add.py"
+  ],
+  "working_dir": "/home/lzuccarelli/Projects/rust-triton-amd-kernel-rl",
+  "llm_agent": "Api",
+  "llm_model": "qwen3-8-27b",
+  "response_type": "Openai",
+  "controller_mode": "Baseline",
+  "token_file": "",
+  "openapi_url": "https://localhost:8000/v1/chat/completions",
+  "max_rollout": 10,
+  "rollout_start": 0,
+  "flow_control": 127,
+  "gpu_arch": 121,
+  "create_stats": true,
+  "use_error_vec": true,
+  "acceptance_threshold": 0.80,
+  "degradation_threshold": -15.0,
+  "exclude_trajectories": [
+  ]
+}
