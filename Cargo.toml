@@ -1,11 +1,11 @@
 [package]
 name = "rust-triton-amd-kernel-rl"
-version = "0.6.1"
+version = "0.6.2"
 edition = "2024"
 authors = ["Luigi Mario Zuccarelli<>luigizuccarelli@gmail.com"]
 
 [lib]
-name = "kernel_optimizer"
+name = "kernel_triton_agent"
 path = "src/lib.rs"
 
 [[bin]]
@@ -13,7 +13,7 @@ name = "kernel-prompt-generator"
 path = "src/bin/generate_prompts.rs"
 
 [[bin]]
-name = "kernel-optimizer-triton-service"
+name = "kernel-triton-agent-service"
 path = "src/bin/server.rs"
 
 [dependencies]

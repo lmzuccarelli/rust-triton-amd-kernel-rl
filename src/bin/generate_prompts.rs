@@ -9,7 +9,7 @@
 //! cargo run --bin generate_prompts
 //! ```
 
-use kernel_optimizer::prompts::generate_template::write_generated_prompt;
+use kernel_triton_agent::prompts::generate_template::write_generated_prompt;
 
 fn main() {
     match write_generated_prompt() {
